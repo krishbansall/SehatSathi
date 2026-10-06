@@ -1,5 +1,7 @@
 # SehatSathi
 
+**🌟 Live Demo:** [https://sehat-sathi-eosin.vercel.app](https://sehat-sathi-eosin.vercel.app)
+
 SehatSathi is a healthcare management and discovery platform built for patients, doctors, and healthcare administrators. It combines doctor discovery, appointment booking, medical record management, healthcare facility locating, and AI-based risk assessment in a single experience.
 
 ## Overview
