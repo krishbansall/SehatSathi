@@ -16,6 +16,9 @@ const errorHandler      = require('./middleware/error');
 
 const app = express();
 
+// Trust proxy for Render/Vercel to fix express-rate-limit ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
+app.set('trust proxy', 1);
+
 // ── Security
 app.use(helmet());
 app.use(mongoSanitize());
@@ -33,16 +36,23 @@ app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
+    
     // In development, allow any localhost
     if (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
       return callback(null, true);
     }
-    // In production, use CLIENT_URL env var
-    if (process.env.CLIENT_URL && origin === process.env.CLIENT_URL) {
-      return callback(null, true);
+    
+    // In production, use CLIENT_URL env var and ignore trailing slashes
+    if (process.env.CLIENT_URL) {
+      const allowedOrigin = process.env.CLIENT_URL.replace(/\/$/, '');
+      if (origin === allowedOrigin || origin === allowedOrigin + '/') {
+        return callback(null, true);
+      }
     }
+    
     callback(new Error(`CORS blocked: ${origin}`));
   },
+
   credentials: true
 }));
 
